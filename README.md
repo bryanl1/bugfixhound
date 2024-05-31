@@ -13,10 +13,9 @@ Note that installing FastAPI using pip should normally install the others below 
     - Log in with different user accesslevels :
     username:admin and pw:123,
     or username:user and pw:123
-You can rename default_bughound.db to bughound.db to use the database with just the two initial users.
 
 
 ## About
 This web app is constructed using the FastAPI framework on the backend, which uses python to create fast web apps.
-It uses SQLite3 which is a fast ORM SQL database held on the drive
-For the frontend it uses some html, jquery and bootstrap components.
+It uses SQLite3 which is a fast ORM SQL database held on the drive.
+For the frontend it uses some html, jquery and Bootstrap components.
