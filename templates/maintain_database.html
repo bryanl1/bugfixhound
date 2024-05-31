@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link href="{{url_for('static', path='css/bootstrap.min.css')}}" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        /* Styles for centering content using Flexbox */
+        .center-flex {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 60px); /* Adjust the value if the header height changes */
+            padding: 10px;
+        }
+        .neu-card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-bottom: 20px; /* Space between cards */
+            width: 100%;
+            max-width: 600px; /* Maximum width of the card */
+        }
+        .neu-card h1 {
+            margin-bottom: 20px; /* Space below the title */
+        }
+        /* Adjust the form-group spacing and button style */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .btn-default {
+            color: #333;
+            background-color: #e7e7e7;
+            border-color: #adadad;
+        }
+        /* Preserve space for the header and avoid content jumping on navigation */
+        body {
+            padding-top: 60px; /* Equal to or greater than the height of the header */
+        }
+    </style>
+    <title>Database Records Access</title>
+</head>
+<body>
+    {% include "header.html" %}
+    <div class="center-flex">
+        <div class="neu-card">
+            <h1 class="text-center">Administrate Database Records</h1>
+            <div class="list-group">
+                <a href="{{ url_for('manage_employee') }}" class="list-group-item list-group-item-action">Manage Employees</a>
+                <a href="{{ url_for('manage_program') }}" class="list-group-item list-group-item-action">Manage Programs and Versions</a>
+                <a href="{{ url_for('manage_areas') }}" class="list-group-item list-group-item-action">Manage Functional Areas</a>
+            </div>
+        </div>
+
+        <div class="neu-card">
+            <h1 class="text-center">Export BugFixHound Data to ASCII or XML</h1>
+            <form action="{{ url_for('export_data') }}" method="POST">
+                <div class="form-group">
+                    <label for="table_name">Choose Data Name and File Type Format:</label><br>
+                    <select id="table_name" name="table_name" class="form-control">
+                        <option value="reports">Bug Reports</option>
+                        <option value="employees">Employees</option>
+                        <option value="programs">Programs</option>
+                        <option value="areas">Functional Areas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select id="file_type" name="file_type" class="form-control">
+                        <option value="xml">XML</option>
+                        <option value="ascii">ASCII</option>
+                    </select>
+                </div>
+                <input type="submit" class="btn btn-default" value="Export data" onclick="return alert('The file has been output to the root directory')" >
+            </form>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script src="{{url_for('static', path='js/jquery.slim.min.js')}}"></script> -->
+    <!-- <script src="{{url_for('static', path='js/popper.min.js')}}"></script> -->
+    <script src="{{url_for('static', path='js/bootstrap.min.js')}}"></script>
+</body>
+</html>

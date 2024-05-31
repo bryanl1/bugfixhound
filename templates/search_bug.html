@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Search Reports Page</title>
+  <link href="{{url_for('static', path = 'css/bootstrap.min.css')}}" rel="stylesheet">
+</head>
+<style>
+  .hiding {
+    display: none;
+  }
+</style>
+<body>
+  {% include "header.html" %}
+  <div class="container">
+    <div class="text-center">
+
+      <h1>Search Bug Reports</h1>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <form action="{{ url_for('search_bug') }}" method="POST">
+
+      <div class="col-sm-12">
+        <div class="col-sm-12">
+          <label for="program">Program:</label>
+          <select id="program" name="program" class="form-control">
+            <option value='ALL' disabled selected>ANY</option>
+            {% for program in programs %}
+            <option value="{{ program['program']}}">{{program['id']}} : {{ program['program']}} r.{{
+              program['release']}} v.{{program['version']}} </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-sm-12">
+          <label for="report_type">Report Type:</label>
+          <select id="report_type" name="report_type" class="form-control">
+            <option value='ALL' disabled selected>ANY</option>
+            {% for report_type in report_types %}
+            <option value="{{ report_type }}">{{ report_type }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-sm-12">
+          <div class="form-group">
+            <label for="severity">Severity:</label>
+            <select name="severity" id="severity" class="form-control">
+              <option value='ALL' disabled selected>ANY</option>
+              {% for severity in severities %}
+              <option value="{{ severity }}">{{ severity }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-sm-12">
+        <div class="col-sm-12">
+          <div class="form-group">
+            <label for="functional_area">Functional Area:</label>
+            <select name="functional_area" id="functional_area" class="form-control">
+
+              <option value='ALL' disabled selected>ANY</option>
+              {% for area in areas %}
+              <option value="{{ area['area'] }}">{{ area['area'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <div class="form-group">
+            <label for="assigned_to">Assigned To:</label>
+            <select name="assigned_to" id="assigned_to" class="form-control">
+              <option value='ALL' disabled selected>ANY</option>
+              {% for employee in employees %}
+              <option value="{{ employee['name'] }}">{{ employee['name'] }} {{ employee.lastname }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <div class="form-group">
+            <label for="reported_by">Reported By:</label>
+            <select name="reported_by" id="reported_by" class="form-control">
+              <option value='ALL' disabled selected>ANY</option>
+              {% for employee in employees %}
+              <option value="{{ employee['name'] }}">{{ employee['name'] }} {{ employee.lastname }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label for="status">Status:</label>
+          <select id="status" name="status" class="form-control">
+            <option value='{{ status[0] }}' selected>Open (Default:{{status[0]}})</option>
+            <option value='ALL'>ANY</option>
+            {% for s in status %}
+            <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-sm-12">
+          <label for="priority">Priority:</label>
+          <select id="priority" name="priority" class="form-control">
+            <option value='ALL' disabled selected>ANY</option>
+            {% for p in priority %}
+            <option value="{{ p }}">{{ p }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-sm-12">
+          <label for="resolution">Resolution:</label>
+          <select id="resolution" name="resolution" class="form-control">
+            <option value='ALL' disabled selected>ANY</option>
+            {% for r in resolution %}
+            <option value="{{ r }}">{{ r }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-sm-12">
+          <label for="resolution_by">Resolution by:</label>
+          <select id="resolution_by" name="resolution_by" class="form-control">
+            <option value='ALL' disabled selected>ANY</option>
+            {% for employee in employees %}
+            <option value="{{ employee['name'] }}">{{ employee['name'] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-sm-3">
+          <div class="form-group">
+            <label for="date_reported">Date Reported:</label>
+            <input type="date" name="date_reported" id="date_reported" class="form-control">
+          </div>
+        </div>
+
+        <div class="col-sm-3 hiding">
+          <div class="form-group">
+            <label for="show_deleted">Show Deleted?</label>
+            <!-- <input type="checkbox" name="show_deleted" id="show_deleted" class="form-control"> -->
+            <input type="hidden" name="show_deleted" value="0" />
+            <input type="checkbox" name="show_deleted" id="show_deleted" value="1" visible="0" >
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-sm-12">
+        <input type="submit" class="btn btn-default" value="Search">
+        <input type="reset" class="btn btn-default" value="Reset">
+        <a class="btn" href="/home">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+
+</body>

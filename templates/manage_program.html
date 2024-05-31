@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+
+<head>
+   <title>Programs Management</title>
+   <link href="{{url_for('static', path = 'css/bootstrap.min.css')}}" rel="stylesheet">
+</head>
+<style>
+   .recover {
+      display: none;
+   }
+</style>
+
+<body>
+   {% include "header.html" %}
+   <div class="container">
+      <div class="text-center">
+         <h1>Programs Management</h1>
+      </div>
+   </div>
+   <div class="container">
+      <div class="row">
+         <div class="col md-12">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">+Add Program</button>
+            <h3>Program List </h3>
+            {%with messages = get_flashed_messages(request)%}
+            {%if messages%}
+            {% for message in messages %}
+            <div class="alert alert-success alert-dismissable" role="alert">
+               <button type="button" class="close" data-dismiss="alert" aria-label="close">
+                  <span aria-hidden="true">&times;</span>
+               </button>
+               {{message['message']}}
+            </div>
+            {%endfor%}
+            {%endif%}
+            {%endwith%}
+            <table class="table">
+               <tr>
+                  <th scope="col">Program ID</th>
+                  <th scope="col">Program</th>
+                  <th scope="col">Release</th>
+                  <th scope="col">Version</th>
+                  <th scope="col">Operations</th>
+               </tr>
+               {% for row in programs %}
+               <tr>
+                  <td>{{row['id']}}</td>
+                  <td>{{row['program']}}</td>
+                  <td>{{row['release']}}</td>
+                  <td>{{row['version']}}</td>
+                  <td>
+                     <a href="/update_program/{{row['id']}}" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#modaledit{{row['id']}}">Edit</a>
+                     <a href="/delete_program/{{row['id']}}" class="btn btn-danger btn-xs" onclick="return confirm('Confirm deletion? Any Bug Reports using this program will also be deleted')">Delete</a>
+                     {% if row['is_deleted'] == 0 %}
+                       <!-- If the program is not deleted, show edit and delete options -->
+                       <a href="/update_program/{{row['prog_id']}}" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#modaledit{{row['prog_id']}}">Edit</a>
+                       <a href="/delete_program/{{row['prog_id']}}" class="btn btn-danger btn-xs" onclick="return confirm('Confirm deletion? Any Bug Reports using this program will also be deleted')">Delete</a>
+                     {% else %}
+                       <!-- If the program is deleted, provide an option to recover -->
+                       <a href="/recover_program/{{row['prog_id']}}" class="btn btn-success btn-xs recover">Recover</a>
+                     {% endif %}
+                  </td>
+               </tr>
+               <div id="modaledit{{row['id']}}" class="modal fade" role="dialog">
+                  <div class="modal-dialog">
+                     <div class="modal-content">
+                        <div class="modal-header">
+                           <button type="button" class="close" data-dismiss="modal">&times;</button>
+                           <h4 class="modal-title">Edit Program ID#{{row['id']}}</h4>
+                        </div>
+                        <div class="modal-body">
+                           <form action="{{ url_for('update_program') }}" method="POST">
+                              <div class="form-group">
+                                 <label>Program*:</label>
+                                 <input type="hidden" name="id" value="{{row['id']}}">
+                                 <input type="text" class="form-control" name="program" value="{{row['program']}}"
+                                    required>
+                              </div>
+                              <div class="form-group">
+                                 <label>Release*:</label>
+                                 <input type="text" class="form-control" name="release"
+                                    value="{{row['release']}}" required>
+                              </div>
+                              <div class="form-group">
+                                 <label>Version*:</label>
+                                 <input type="text" class="form-control" name="version"
+                                    value="{{row['version']}}" required>
+                              </div>
+                              <div class="form-group">
+                                 <button class="btn btn-primary" type="submit">Update</button>
+                              </div>
+                           </form>
+                        </div>
+                        <div class="modal-footer">
+                           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               {% endfor %}
+               </tbody>
+            </table>
+            <div id="myModal" class="modal fade" role="dialog">
+               <div class="modal-dialog">
+                  <div class="modal-content">
+                     <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add New Program</h4>
+                     </div>
+                     <div class="modal-body">
+                        <form action="{{ url_for('add_program') }}" method="POST">
+                           <div class="form-group">
+                              <label>Program*:</label>
+                              <input type="hidden" name="id">
+                              <input type="text" class="form-control" name="program" required>
+                           </div>
+                           <div class="form-group">
+                              <label>Release*:</label>
+                              <input type="number" step="Any" class="form-control" name="release" required>
+                           </div>
+                           <div class="form-group">
+                              <label>Version*:</label>
+                              <input type="number" step="Any" class="form-control" name="version" required>
+                           </div>
+                           <div class="form-group">
+                              <button class="btn btn-primary" type="submit">Add</button>
+                           </div>
+                        </form>
+                     </div>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+   <script type="text/javascript" src="{{url_for('static', path='js/jquery-3.2.1.min.js') }}"></script>
+   <script type="text/javascript" src="{{url_for('static', path = 'js/bootstrap.min.js')}}"></script>
+</body>

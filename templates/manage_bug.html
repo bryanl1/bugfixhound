@@ -1,0 +1,379 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Edit/Update Reports</title>
+  <link href="{{url_for('static', path = 'css/bootstrap.min.css')}}" rel="stylesheet">
+</head>
+<style>
+  .recover {
+    display: none;
+  }
+</style>
+
+<body>
+  {% include "header.html" %}
+  <div class="container">
+    <div class="text-center">
+
+      {% if search %}
+      <h1>Search Results</h1>
+      {% else %}
+      <h1>View and Update Reports</h1>
+      {% endif %}
+
+    </div>
+  </div>
+  <div class="container">
+    {%with messages = get_flashed_messages(request)%}
+    {%if messages%}
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissable" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      {{message['message']}}
+    </div>
+    {%endfor%}
+    {%endif%}
+    {%endwith%}
+    <div class="row">
+      <div class="col md-12">
+        <div>
+          <button type="button" class="btn btn-light "><a href="{{ url_for('add_bug') }}">+ New Bug Report</a></button>
+          <button type="button" class="btn btn-light "><a href="{{ url_for('search_bug') }}">Search Reports</a></button>
+        </div>
+        <h3>Reports (Total: {{reportsCount}})</h3>
+        <table class="table">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Status</th>
+            <th scope="col">Program</th>
+            <th scope="col">Summary</th>
+            <th scope="col">Severity</th>
+            <th scope="col">Operations</th>
+          </tr>
+          {% for row in reports %}
+
+          {% if row['status'] == 'Closed' %}
+          <tr class="list-group-item-danger">
+            {% else %}
+          <tr class="list-group-item-success">
+            {% endif %}
+
+            <td class="badge badge-pill badge-light"><a href="#bugDetailsModal{{row['id']}}" data-toggle="modal"
+                data-target="#bugDetailsModal{{row['id']}}">{{ row['id'] }} - View</a></td>
+            <td>{{row['status']}}</td>
+            <td>{{row['program']}}</td>
+            <td>{{row['problem_summary']}}</td>
+            <td>{{row['severity']}}</td>
+            <td>
+              <a href="#modaledit{{row['id']}}" class="btn btn-primary btn-xs" data-toggle="modal"
+                data-target="#modaledit{{row['id']}}">Edit</a>
+              <a href="/delete_bug/{{row['id']}}" class="btn btn-danger btn-xs"
+                onclick="return confirm('Confirm deleting this report?')">Delete</a>
+              {% if row['is_deleted'] == 0 %}
+              <a href="#modaledit{{row['bug_id']}}" class="btn btn-primary btn-xs" data-toggle="modal"
+                data-target="#modaledit{{row['bug_id']}}">Edit</a>
+              <a href="/delete_bug/{{row['bug_id']}}" class="btn btn-danger btn-xs"
+                onclick="return confirm('Confirm deleting this report?')">Delete</a>
+              {% else %}
+              <a href="/recover_bug/{{row['id']}}" class="btn btn-success recover">Recover</a>
+              {% endif %}
+            </td>
+          </tr>
+
+          <!-- Non-editable Modal for Viewing Bug Details -->
+          <div id="bugDetailsModal{{row['id']}}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">Bug Details</h4>
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                  {% set current_program = programs[ row['program_id']-1 ]%}
+                  <p><strong>Program:</strong> {{ row['program'] }} (
+                    {{current_program['program']}}
+                    {{current_program['release']}},
+                    {{current_program['version']}} )</p>
+                  <p><strong>Report Type:</strong> {{ row['report_type'] }}</p>
+                  <p><strong>Severity:</strong> {{ row['severity'] }}</p>
+                  <p><strong>Problem Summary:</strong> {{ row['problem_summary'] }}</p>
+                  <p><strong>Reproducible:</strong> {{ row['reproducible'] }}</p>
+                  <p><strong>Problem:</strong> {{ row['problem'] }}</p>
+                  <p><strong>Suggested Fix:</strong> {{ row['suggested_fix'] }}</p>
+                  <p><strong>Reported By:</strong> {{ row['reported_by'] }}</p>
+                  <p><strong>Date Reported:</strong> {{ row['date_reported'] }}</p>
+                  <p><strong>---Below Are Optional Input Only By The Development Team---</strong></p>
+                  <p><strong>Functional Area:</strong> {{ row['functional_area'] }}</p>
+                  <p><strong>Assigned To:</strong> {{ row['assigned_to'] }}</p>
+                  <p><strong>Comments:</strong> {{ row['comments'] }}</p>
+                  <p><strong>Status:</strong> {{ row['status'] }}</p>
+                  <p><strong>Priority:</strong> {{ row['priority'] }}</p>
+                  <p><strong>Resolution:</strong> {{ row['resolution'] }}</p>
+                  <p><strong>Resolution Version:</strong> {{ row['resolution_version'] }}</p>
+                  <p><strong>Resolution By:</strong> {{ row['resolution_by'] }}</p>
+                  <p><strong>Date Resolved:</strong> {{ row['date_resolved'] }}</p>
+                  <p><strong>Tested By:</strong> {{ row['tested_by'] }}</p>
+
+                  {% set attachment = row['filename'] %}
+                  {% if attachment %}
+                  <p><strong>Attachment:</strong> <a
+                      href="{{ url_for('download_attachment', filename=row['filename'] ) }}">{{ row['filename'] }}</a>
+                  </p>
+                  {% else %}
+                  <p><strong>Attachment:</strong> No attachment</p>
+                  {% endif %}
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div id="modaledit{{row['id']}}" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Update Report</h4>
+                </div>
+                <div class="modal-body">
+                  <form action="{{ url_for('update_bug') }}" enctype="multipart/form-data" method="POST">
+                    <div class="form-group">
+                      <input type="hidden" name="id" value="{{row['id']}}">
+                      <label for="program">Program:</label>
+                      <select id="program" name="program" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for program in programs %}
+                        {% if program['program'] ==row['program'] %}
+                        <option value="{{ program['program'] }}:{{program['id']}}" selected>{{ program['program'] }}
+                        </option>
+                        {% else %}
+                        <option value="{{ program['program'] }}:{{program['id']}}">{{ program['program'] }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="report_type">Report Type:</label>
+                      <select id="report_type" name="report_type" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for report_type in report_types %}
+                        {% if report_type ==row['report_type'] %}
+                        <option value="{{ report_type }}" selected>{{ report_type }}</option>
+                        {% else %}
+                        <option value="{{ report_type }}">{{ report_type }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="severity">Severity:</label>
+                      <select name="severity" id="severity" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for severity in severities %}
+                        {% if severity ==row['severity'] %}
+                        <option value="{{ severity }}" selected>{{ severity }}</option>
+                        {% else %}
+                        <option value="{{ severity }}">{{ severity }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="problem_summary">Problem Summary:</label>
+                      <input type="text" name="problem_summary" id="problem_summary" value="{{row['problem_summary']}}"
+                        class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label for="reproducible">Reproducible:</label>
+                      <select name="reproducible" id="reproducible" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% if row['reproducible']=='Yes' %}
+                        <option value="Yes" selected>Yes</option>
+                        <option value="No">No</option>
+                        {% else %}
+                        <option value="0" selected>No</option>
+                        <option value="1">Yes</option>
+                        {% endif %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="problem">Problem:</label>
+                      <input type="text" name="problem" id="problem" value="{{row['problem']}}" class="form-control">
+                    </div>
+                    <div class="form-group>
+                      <label for=" suggested_solution">Suggested Fix:</label>
+                      <input type="text" name="suggested_fix" id="suggested_fix" value="{{row['suggested_fix']}}"
+                        class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label for="reported_by">Reported By:</label>
+                      <select name="reported_by" id="reported_by" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for employee in employees %}
+                        {% if employee['name']==row['reported_by'] %}
+                        <option value="{{ employee['name'] }}" selected>{{ employee['name'] }}</option>
+                        {% else %}
+                        <option value="{{ employee['name'] }}">{{ employee['name'] }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="date_reported">Date Reported:</label>
+                      <input type="date" name="date_reported" id="date_reported" value="{{row['date_reported']}}"
+                        class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label for="functional_area">Functional Area:</label>
+                      <select name="functional_area" id="functional_area" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for area in areas %}
+                        {% set current_area_program = programs[ area['program_id']-1 ] %}
+                        {% if area['area']==row['functional_area'] %}
+                        <option value="{{ area['area'] }}" selected>{{ area['area'] }} ({{
+                          current_area_program['program'] }} {{ current_area_program['release'] }},{{
+                          current_area_program['version'] }} )</option>
+                        {% else %}
+                        <option value="{{ area['area'] }}">{{ area['area'] }} ({{ current_area_program['program'] }} {{
+                          current_area_program['release'] }},{{ current_area_program['version'] }}) </option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="assigned_to">Assigned To:</label>
+                      <select name="assigned_to" id="assigned_to" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for employee in employees %}
+                        {% if employee['name']==row['assigned_to'] %}
+                        <option value="{{ employee['name'] }}" selected>{{ employee['name'] }}</option>
+                        {% else %}
+                        <option value="{{ employee['name'] }}">{{ employee['name'] }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="comments">Comments:</label>
+                      <input type="text" name="comments" id="comments" value="{{row['comments']}}" class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label for="status">Status:</label>
+                      <select id="status" name="status" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for s in status %}
+                        {% if s==row['status'] %}
+                        <option value="{{ s }}" selected>{{ s }}</option>
+                        {% else %}
+                        <option value="{{ s }}">{{ s }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="priority">Priority:</label>
+                      <select id="priority" name="priority" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for p in priority %}
+                        {% if p==row['priority'] %}
+                        <option value="{{ p }}" selected>{{ p }}</option>
+                        {% else %}
+                        <option value="{{ p }}">{{ p }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="resolution">Resolution:</label>
+                      <select id="resolution" name="resolution" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for r in resolution %}
+                        {% if r==row['resolution'] %}
+                        <option value="{{ r }}" selected>{{ r }}</option>
+                        {% else %}
+                        <option value="{{ r }}">{{ r }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="resolution_version">Resolution Version:</label>
+                      <select id="resolution_version" name="resolution_version" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for r in resolution_version %}
+                        {% if r==row['resolution_version'] %}
+                        <option value="{{ r }}" selected>{{ r }}</option>
+                        {% else %}
+                        <option value="{{ r }}">{{ r }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="resolution_by">Resolution by:</label>
+                      <select id="resolution_by" name="resolution_by" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for employee in employees %}
+                        {% if employee['name']==row['resolution_by'] %}
+                        <option value="{{ employee['name'] }}" selected>{{ employee['name'] }}</option>
+                        {% else %}
+                        <option value="{{ employee['name'] }}">{{ employee['name'] }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label for="date_resolved">Date Resolved:</label>
+                      <input type="date" name="date_resolved" id="date_resolved" value="{{row['date_resolved']}}"
+                        class="form-control">
+                    </div>
+                    <div class="form-group">
+                      <label for="tested_by">Tested by:</label>
+                      <select id="tested_by" name="tested_by" class="form-control">
+                        <option value="" disabled selected>Please select</option>
+                        {% for employee in employees %}
+                        {% if employee['name']==row['tested_by'] %}
+                        <option value="{{ employee['name'] }}" selected>{{ employee['name'] }}</option>
+                        {% else %}
+                        <option value="{{ employee['name'] }}">{{ employee['name'] }}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-sm-12">
+
+                      <label for="attachment">Update Attachment:</label><br>
+                      {% set attachment = row['filename'] %}
+                      {% if attachment %}
+                      <input type="hidden" name="currfil" value="{{ row['filename'] }}">
+                      <a href="{{ url_for('download_attachment', filename=row['filename']) }}">Current Attachment: {{ row['filename'] }}</a></br>
+                      <a type="button" class="btn btn-danger btn-xxs" id="removeAttachment" href="/delete_attachment/{{row['id']}}">Delete Attachment {{row['id']}}</a>
+                      {% else %}
+                      <p>No current attachment</p>
+                      {% endif %}
+                      <input type="file" id="attachment" name="attachment" class="form-control"><br><br>
+                    </div>
+                    <div class="form-group">
+                      <button class="btn btn-primary" type="submit">Save and Update</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  </div>
+  <script type="text/javascript" src="{{url_for('static', path='js/jquery-3.2.1.min.js') }}"></script>
+  <script type="text/javascript" src="{{url_for('static', path = 'js/bootstrap.min.js')}}"></script>
+</body>

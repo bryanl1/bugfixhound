@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Home</title>
+  <link href="{{url_for('static', path = 'css/bootstrap.min.css')}}" rel="stylesheet">
+</head>
+
+<body>
+  {% include "header.html" %}
+
+  <div class="container">
+    <div class="text-center">
+      <img src="{{url_for('static', path = 'logo150.png')}}" alt="BugFixHound" class="img-responsive center-block"
+        style="width: 150px; height: 150px;">
+      <h1>Welcome to BugFixHound</h1>
+      <h3>Please select an option</h3>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <!-- <ul class="list-group"> -->
+    <li class=" btn btn-lg"><a href="{{ url_for('add_bug') }}">New Report</a></li>
+    {% if userlevel>1 %}
+    <li class="btn btn-lg"><a href="{{ url_for('manage_bug') }}">Edit/Update Reports</a></li>
+    {% endif %}
+    <li class="btn btn-lg"><a href="{{ url_for('search_bug') }}">Search Reports</a></li>
+    <!-- <li class="btn btn-lg"><a href="{{ url_for('search_bug') }}">Combined Search/View/Edit/Update Reports</a></li> -->
+    {% if userlevel>2 %}
+    <li class="list-group-item list-group-item-warning"><a href="{{ url_for('maintain_database') }}">Database
+        Administration</a></li>
+    {% endif %}
+    <!-- </ul> -->
+  </div>
+
+</body>
+
+</html>

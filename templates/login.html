@@ -1,0 +1,43 @@
+{% block body %}
+
+<html>
+
+<head>
+    <title>BugFixHound</title>
+    <link href="{{url_for('static', path = 'css/bootstrap.min.css')}}" rel="stylesheet">
+</head>
+
+{%with messages = get_flashed_messages(request)%}
+{%if messages%}
+{% for message in messages %}
+<div class="alert alert-danger fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <strong>{{message['category']}} </strong>{{message['message']}}
+</div>
+{%endfor%}
+{%endif%}
+{%endwith%}
+
+<div class="container border border-primary align-items-center justify-content-center">
+
+    <div class="text-center">
+        <h1>Sign in</h1>
+        <h3>to use BugFixHound</h3>
+        <form action="/" method="POST">
+            <label for="username">Enter Username:</label>
+            <input type="text" id="username" name="username"><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password"><br><br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+<!--copy paste in html for bootstrap components to work -->
+<script type="text/javascript" src="{{url_for('static', path='js/jquery-3.2.1.min.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', path = 'js/bootstrap.min.js')}}"></script>
+
+</html>
+
+{% endblock %}

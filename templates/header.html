@@ -1,0 +1,70 @@
+<script type="text/javascript" src="{{url_for('static', path='js/jquery-3.2.1.min.js') }}"></script>
+<script type="text/javascript" src="{{url_for('static', path = 'js/bootstrap.min.js')}}"></script>
+<style>
+  .navbar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #e3f2fd;
+    padding: 0 0px;
+    margin-bottom: 0px;
+  }
+
+  .navbar-brand {
+    font-size: 40px;
+    margin-bottom: 10px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  .nav-item {
+    padding: 5px 10px;
+  }
+
+  .nav-links li a {
+    color: #c10ff3;
+    /* links——Color */
+    font-size: 20px;
+    /* links——Size */
+    text-decoration: none;
+  }
+
+  .left-items {
+    justify-content: start;
+  }
+
+  .right-items {
+    justify-content: end;
+    margin-right: 10px;
+  }
+</style>
+
+<div class="container">
+  <nav class="navbar navbar-light">
+    <!-- Clickable "BugFixhound" to home dashboard menu -->
+    <div class="navbar-brand"><a href="{{ url_for('home') }}">BugFixhound</a></div>
+    <!-- User information on the left -->
+    <ul class="nav-links left-items">
+      <li class="nav-item">Signed in as: {{username}}</li>
+      <li class="nav-item">Access Level: {{userlevel}}</li>
+    </ul>
+    <!-- Navigation links on the right -->
+    <ul class="nav-links right-items">
+      <li class="nav-item"><a href="{{ url_for('home') }}">Home</a></li>
+      {% if userlevel == 3 %}
+      <li class="nav-item"><a href="{{ url_for('maintain_database') }}">DatabaseMaintenance</a></li>
+      {% endif %}
+      <li class="nav-item"><a href="{{ url_for('logout') }}">Sign out</a></li>
+    </ul>
+  </nav>
+</div>
