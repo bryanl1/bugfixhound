@@ -1,5 +1,6 @@
 ## Notes
 Angular framework and tools are used as the frontend, using the Angular CLI, it is built, and then served statically by the FastAPI backend. There might be some conflicts/issues for the time being
+Otherwise, from the root directory, use 'ng serve' to begin serving the angular pages, and 'uvicorn main:app' to run the server/backend, which might them on separate ports. But it works, though not pretty.
 
 ## Requirements
 (note that on windows, you'll have to prefix with 'py -m' before using python modules)
