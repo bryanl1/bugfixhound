@@ -15,6 +15,7 @@ import uvicorn
 app = FastAPI()
 app.secret_key = 'super-secret'
 
+
 _report_types = ['Coding Error', 'Design Issue', 'Hardware Error', 'Suggestion', 'Documentation', 'Query']
 _severities = ['Fatal', 'Serious', 'Minor']
 _priority=[1,2,3,4,5,6]
@@ -43,14 +44,31 @@ middleware = [
 app = FastAPI(middleware=middleware)
 #app.add_middleware(HTTPSRedirectMiddleware)
 app.secret_key = 'super-secret'
+import os
+angular_build_path = os.path.join(os.path.dirname(__file__), "dist/angular-frontend")
+
 
 # Add the static files and templates
+app.mount("/angular", StaticFiles(directory="dist/angular-frontend", html=True), name="angular")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 templates.env.globals['get_flashed_messages'] = get_flashed_messages
 
+
+# Mount Angular frontend
+
+#testing
+#@app.get("/")
+#@app.get("/angular/")
+#async def index(request: Request):
+#    return templates.TemplateResponse("index.html", {"request": request})
+
+@app.get("/existing-jinja-page")
+async def existing_page():
+    return "This is a Jinja-rendered page"
+
 # Define the routes
-@app.get("/")
+#@app.get("/")
 @app.get("/login", response_class=HTMLResponse)
 async def login(request: Request):
     if 'logged_in' in request.session:
