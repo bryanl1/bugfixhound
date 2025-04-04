@@ -1,5 +1,8 @@
-## Requirements
+## Notes
+Angular framework and tools are used as the frontend, using the Angular CLI, it is built, and then served statically by the FastAPI backend. There might be some conflicts/issues for the time being
 
+## Requirements
+(note that on windows, you'll have to prefix with 'py -m' before using python modules)
 - pip install -r requirements
 
 Above should be all that is needed. Major requirements for installation are Python and pip(https://pypi.org/project/pip/), and SQLite3 which has been in the standard python library since ver 2.5.
